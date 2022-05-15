@@ -3,6 +3,7 @@
 
 #include "system.cpp"
 #include "cfg.cpp"
+#include "server.cpp"
 #include <conio.h>
 
 //virtual escape sequences are still a WIP on windows, but nice to use them in future
@@ -15,7 +16,7 @@ namespace menu {
     CONSOLE_SCREEN_BUFFER_INFO conInfo;
     DWORD cw;
     COORD origin;
-    DWORD t_s=3000; //time to sleep, ms
+    DWORD t_s=2000; //time to sleep, ms
 
     char sl;
     char select(std::string inputs){
@@ -58,13 +59,67 @@ namespace menu {
         cls();
         std::wcout<<logo<<L"\n";
         Sleep(t_s);
+        if(!CloseHandle(conScreenBuf)) logErr();
         return nullptr;
     }
 
+    fnPtr settings(){
+        cls();
+        return nullptr;
+    }
+    
     fnPtr main(){
         cls();
-        std::cout<<"\nVERSION: CAC++ 0.1 EXPERIMENTAL\n\n";
-        std::cout<<" 0 Exit CAC++ Launcher\n";
+        std::cout<<"Arma 3 CAC Launcher\n";
+        std::cout<<"\nVERSION: CAC++ 0.1 EXPERIMENTAL\n";
+        std::cout<<"\nUSERNAME: ?\n";
+        std::cout<<"\nOPTIONAL MODS: ?\n";
+        std::cout<<"\nSERVER STATUS: ?\n";
+        std::cout<<"\n 1 Exile Altis\n";
+        std::cout<<" 2 Exile Tanoa\n";
+        std::cout<<" 3 Coop PVE\n";
+        std::cout<<" 4 King of The Hill TVT\n";
+        std::cout<<" 5 Dynamic Recon Ops CUP\n";
+        std::cout<<" 6 Antistasi RHS\n";
+        std::cout<<" 7 Exile Escape\n";
+        std::cout<<" 8 Antistasi S.O.G. Prairie Fire\n";
+        std::cout<<"\n 9 CAC Settings\n";
+        std::cout<<"\n 0 Exit CAC++ Launcher\n";
+        std::cout<<"Choose option (0-9): ";
+        sl=select("1234567890");
+        switch(sl){
+            //TODO handling if fail to launch arma (e.g. arma3_x64.exe not found)
+            case '1':
+            server::launchPwd(server::exileAltis);
+            break;
+            case '2':
+            server::launchPwd(server::exileTanoa);
+            break;
+            case '3':
+            server::launchServer(server::coop);
+            break;
+            case '4':
+            server::launchServer(server::KoTH);
+            break;
+            case '5':
+            server::launchServer(server::DRO);
+            break;
+            case '6':
+            server::launchServer(server::antistasi);
+            break;
+            case '7':
+            server::launchServer(server::exileEscape);
+            break;
+            case '8':
+            server::launchVN(server::prairieFire);
+            break;
+            case '9':
+            return (fnPtr)settings;
+            break;
+            case '0':
+            return (fnPtr)end;
+            break;
+        }
         return (fnPtr)end;
     }
 
@@ -92,11 +147,16 @@ namespace menu {
                         std::cout<<" 2 Exit\n";
                         sl=select("12");
                         if(sl=='1'){
-                            do{
-                                cls();
-                                std::cout<<"\nPlease enter path of your steam.exe. (Example: \"C:\\Steam.exe\")\n";
-                                std::wcin>>steamPath;   
-                            } while();
+                            cls();
+                            std::cout<<"\nPlease enter path of your steam.exe. (Example: \"C:\\Steam.exe\")\n";
+                            std::wcin>>steamPath;
+                            if(std::filesystem::exists(steamPath)){//TODO should check that the filename is steam.exe or enter dir instead.
+                                cls(); std::cout<<"STEAM FOUND\n"; Sleep(t_s);
+                                setVar(steamPath.wstring(),L"CACCore\\memory.txt");
+                                found=true;
+                            } else{
+                                cls(); std::wcout<<steamPath.wstring()<<" DOES NOT EXIST.\n";
+                            }
                         }else if(sl=='2'){
                             return (fnPtr) end;
                         }
@@ -110,16 +170,12 @@ namespace menu {
                 Sleep(t_s);
                 return (fnPtr)main;
             } else{
-                std::cout<<"FAILED TO LAUNCH STEAM. LAUNCH STEAM MANUALLY IF ISSUE PERSISTS.\n";
+                cls(); std::cout<<"FAILED TO LAUNCH STEAM. LAUNCH STEAM MANUALLY IF ISSUE PERSISTS.\n";/*TODO allow user to launch steam manually
+                and then continue.*/
                 Sleep(t_s);
                 return (fnPtr)end;
             }
         }
-    }
-
-    fnPtr settings(){
-        cls();
-        return nullptr;
     }
 
     fnPtr optMods(){

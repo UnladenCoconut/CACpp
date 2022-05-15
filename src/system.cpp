@@ -83,15 +83,18 @@ bool steamFind(){
 
 //this is also used by server to launch arma.
 bool launch(std::filesystem::path path,std::wstring args){
+    path=std::filesystem::absolute(path);
     STARTUPINFOW si;
     PROCESS_INFORMATION pi;
 
     ZeroMemory(&si,sizeof(si));
     ZeroMemory(&pi,sizeof(pi));
-    std::wstring cmdStr=path.filename().wstring()+L" "+args;
+    std::wstring cmdStr=path.wstring()+L" "+args;
     wchar_t * cmdCStr=new wchar_t[cmdStr.length()+1];
     wcscpy(cmdCStr,cmdStr.c_str());
-    bool launched = CreateProcessW(path.c_str(),cmdCStr,NULL,NULL,false,NULL,NULL,path.parent_path().c_str(),&si,&pi);
+    bool launched = CreateProcessW(path.c_str(),cmdCStr,NULL,NULL,false,CREATE_DEFAULT_ERROR_MODE | CREATE_NEW_CONSOLE,NULL,path.parent_path().c_str(),&si,&pi);
+    //TODO for actual arma 3 use CREATE_DEFAULT_ERROR_MODE | CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS
+    //TODO revise the process creation flags.
     delete cmdCStr;
     CloseHandle( pi.hProcess );
     CloseHandle( pi.hThread );

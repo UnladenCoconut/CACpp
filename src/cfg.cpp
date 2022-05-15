@@ -12,7 +12,8 @@
 //TODO better file exception handling
 //TODO some files are ascii, some store wide char path
 
-void setVar(std::wstring var, std::wstring path){//THIS DOESNT WORK!!
+void setVar(const std::wstring var, std::wstring path){
+
     std::wofstream f;
     f.exceptions(std::wfstream::badbit | std::wfstream::failbit);
     f.open(path,std::wfstream::out | std::wfstream::trunc);
@@ -20,7 +21,13 @@ void setVar(std::wstring var, std::wstring path){//THIS DOESNT WORK!!
     f.close();
 }
 
+//fixes problems with c string resolving to bool instead of string
+void setVar(const wchar_t* cStr, std::wstring path){
+    setVar((const std::wstring)(cStr),path);
+}
+
 void setVar(bool b, std::wstring path){
+    std::cerr<<"ok";
     b? setVar(L"ENABLED",path): setVar(L"DISABLED",path);
 }
 
