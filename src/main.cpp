@@ -17,8 +17,6 @@ try {
         return 1;
     }
     server::init();
-
-    std::cout<<sizeof(int);
     //--------
 
     fnPtr menuNext=(fnPtr) menu::start;

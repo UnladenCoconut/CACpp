@@ -11,7 +11,7 @@
 namespace server{
 
 struct{
-    const std::wstring dirs[5]={L"@ARM",L"@JSRS_SOUNDMOD",L"@DUI",L"@Blastcore",L"@VanillaSmokeForBlastcore"};
+    const std::wstring dirs[5]={L"@ARM",L"@JSRS_SOUNDMOD",L"@DUI",L"@Blastcore",L"@VanillaSmokeForBlastcore"}; //mod folder name should be same as CACCore .txt filename, e.g. @ARM, @ARM.txt
     int num=5; 
 } optMods;
 
@@ -29,10 +29,11 @@ struct Server{
         for(int i=0;i<numMods;++i){
             ret+=modDir+mods[i]+L';';
         }
-        bool b; getVar(b,L".\\CACCore\\memory2.txt");
+        bool b; getVar(b,L"CACCore\\memory2.txt");
         if(b){
             for(int i=0;i<optMods.num;++i){
-                bool b1; getVar(b1,optMods.dirs[i]);
+                std::wstring fname(optMods.dirs[i]); fname+=L".txt";
+                bool b1; getVar(b1,fname);
                 if(b1) ret+=modDir+optMods.dirs[i]+L';';
             }
         }
@@ -59,18 +60,13 @@ struct Server{
 };
 
 //-------- declarations --------
-std::wstring Server::modDir=L"", pwd=L"", ip=L"cacservers.ddns.net",
+std::wstring Server::modDir=L"", password=L"", ip=L"cacservers.ddns.net",
 armaArgs=L"-skipIntro -noSplash -world=empty -exThreads=7 -enableHT -hugepages -connect="+ip;//TODO username
 
 void init(){
     getVar(Server::getModDir(),L".\\CACCore\\moddir.txt");
     if(Server::getModDir()==L"") Server::setModDir(std::wstring(L".\\Mods\\"));
-    getVar(pwd,L"CACCore\\password.txt");
-
-    //load optmods status
-    for(int i=0;i<optMods.num;++i){
-        ;
-    }
+    getVar(password,L"CACCore\\password.txt");
 }
  
 //-------- getter/setter for modDir --------
@@ -92,17 +88,17 @@ void Server::setModDir(std::wstring &s){ //sets in file, but also processes s, s
 }
 
 //--------- Server launch functions --------
-bool launchServer(Server s){
-    std::wstring args=armaArgs+L" -mods="+s.mkModArg();
+bool launchServer(Server &s){
+    std::wstring args=armaArgs+L" -mod="+s.mkModArg();
     return launch(L".\\arma3_x64.exe", args);
 }
 
-bool launchExile(Server s){
-    std::wstring tmp=armaArgs+L" -password="+pwd;
-    return launch(".\\arma3_x64.exe", tmp);
+bool launchPwd(Server &s){ //for password protected servers
+    std::wstring args=armaArgs+L" -password="+password+L" -mod="+s.mkModArg();
+    return launch(".\\arma3_x64.exe", args);
 }
 
-bool launchVN(Server s){
+bool launchVN(Server &s){
     std::wstring args=armaArgs+L" -mod=vn;"+s.mkModArg();
     return launch(L".\\arma3_x64.exe", args);
 }
@@ -152,6 +148,12 @@ Server exileTanoa = {
     2602,
     exileAltis.numMods,
     exileAltis.mods
+};
+
+Server exileEscape = {
+    2372,
+    5,
+    new std::wstring[5] {L"@Exile",L"@CBA_A3",L"@DualArms",L"@EnhancedMovement",L"@EnhancedMovementRework"},
 };
 
 Server prairieFire = {

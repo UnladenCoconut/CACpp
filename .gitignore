@@ -1,6 +1,7 @@
 .vscode/
 src/.vscode/
 bin/CACCore/
+bin/CACCore.bat
 bin/*.obj
 bin/*.exe
 lib/
