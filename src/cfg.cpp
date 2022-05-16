@@ -10,10 +10,8 @@
 //these functions get and store variables stored in CACCore config txt files
 //in future, it would be better to use either registry keys or a single configuration file
 //TODO better file exception handling
-//TODO some files are ascii, some store wide char path
 
 void setVar(const std::wstring var, std::wstring path){
-
     std::wofstream f;
     f.exceptions(std::wfstream::badbit | std::wfstream::failbit);
     f.open(path,std::wfstream::out | std::wfstream::trunc);
@@ -22,18 +20,18 @@ void setVar(const std::wstring var, std::wstring path){
 }
 
 //fixes problems with c string resolving to bool instead of string
-void setVar(const wchar_t* cStr, std::wstring path){
-    setVar((const std::wstring)(cStr),path);
+void setVar(const wchar_t* var, std::wstring path){
+    setVar(std::wstring(var),path);
 }
 
-void setVar(bool b, std::wstring path){
-    std::cerr<<"ok";
+void setVar(const bool b, std::wstring path){
     b? setVar(L"ENABLED",path): setVar(L"DISABLED",path);
 }
 
-void getVar(std::wstring &var,std::wstring path){ //return via args as cant overload via return type
+std::wstring getVarWS(std::wstring path){
+    std::wstring var;
     if(!std::filesystem::exists(path)){
-        var=L""; return;
+        return L"";
     }
     std::wifstream f;
     f.exceptions(std::wfstream::badbit | std::wfstream::failbit);
@@ -42,21 +40,18 @@ void getVar(std::wstring &var,std::wstring path){ //return via args as cant over
     fs<<f.rdbuf();
     var=fs.str();
     f.close();
+    return var;
 }
 
-void getVar(bool &var,std::wstring path){
-    if(!std::filesystem::exists(path)){
-        var=false; return;
-    }
-    std::wstring boolStr;
-    getVar(boolStr,path);
-    if(boolStr==L"ENABLED"){
-        var=true;
-    } else {
-        if(boolStr!=L"DISABLED"){
+bool getVarB(std::wstring path){
+    auto var=getVarWS(path);
+    if(var==L"ENABLED"){
+        return true;
+    }else{
+        if(var!=L"DISABLED"){
             setVar(L"DISABLED",path);
         }
-        var=false;
+        return false;
     }
 }
 

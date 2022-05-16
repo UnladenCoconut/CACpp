@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <TlHelp32.h>
 #include <filesystem>
+#include "cfg.cpp"
 
 void logErr(){//this logs windows system error messages to stderr (which is redirected to log file.)
     /* 
@@ -26,7 +27,7 @@ void logErr(){//this logs windows system error messages to stderr (which is redi
     LocalFree(msg);
 }
 
-std::filesystem::path steamPath; //global
+//std::filesystem::path steamPath; //global
 
 bool steamRunning(){
     bool ret=false;
@@ -52,12 +53,12 @@ bool steamRunning(){
     }
 }
 
-bool steamFind(){
+std::wstring steamFind(){
     wchar_t drives[104];
     int chr_n=GetLogicalDriveStringsW(104,drives);
     if(chr_n>104 || chr_n==0){
         std::cerr<<"failed to read drives.";
-        return false;
+        return L"";
     }
 
     wchar_t drive[4];
@@ -72,8 +73,7 @@ bool steamFind(){
             std::filesystem::recursive_directory_iterator file_i(drive,std::filesystem::directory_options::skip_permission_denied);
             for(auto &&file: file_i){
                 if(file.path().filename()=="steam.exe"){
-                    steamPath=file.path();
-                    return true;
+                    return file.path().wstring();
                 }
             }
         }
