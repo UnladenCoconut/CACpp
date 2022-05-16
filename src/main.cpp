@@ -16,13 +16,10 @@ try {
     if(!menu::init()){
         return 1;
     }
-    server::init();
+    
     //--------
 
-    fnPtr menuNext=(fnPtr) menu::start;
-    while(menuNext!=nullptr){
-        menuNext= ((ptrFnPtr)menuNext)();
-    }
+    menu::start();
 
     return 0;
 

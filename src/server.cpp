@@ -10,11 +10,15 @@
 
 namespace server{
 
+//-------- declarations --------
+
 struct{
-    const std::wstring dirs[5]={L"@ARM",L"@JSRS_SOUNDMOD",L"@DUI",L"@Blastcore",L"@VanillaSmokeForBlastcore"}; //mod folder name should be same as CACCore .txt filename, e.g. @ARM, @ARM.txt
+    const std::wstring dirs[5]={L"@ARM",L"@JSRS_SOUNDMOD",L"@DUI",L"@Blastcore",L"@VanillaSmokeForBlastcore"}; 
+    //mod folder name should be same as CACCore .txt filename, e.g. @ARM, @ARM.txt
     int num=5; 
 } optMods;
 
+//-------- Server class --------
 struct Server{
     int port;
     const int numMods;
@@ -25,16 +29,14 @@ struct Server{
     }
 
     std::wstring mkModArg(){
-        std::wstring ret;
+        std::wstring ret,modDir=getVarWS(L"CACCore\\moddir.txt");
         for(int i=0;i<numMods;++i){
             ret+=modDir+mods[i]+L';';
         }
-        bool b; getVar(b,L"CACCore\\memory2.txt");
-        if(b){
+        if(getVarB(L"CACCore\\memory2.txt")){
             for(int i=0;i<optMods.num;++i){
                 std::wstring fname(optMods.dirs[i]); fname+=L".txt";
-                bool b1; getVar(b1,fname);
-                if(b1) ret+=modDir+optMods.dirs[i]+L';';
+                if(getVarB(fname)) ret+=modDir+optMods.dirs[i]+L';';
             }
         }
         ret.pop_back();
@@ -51,41 +53,37 @@ struct Server{
         }
         return ret;
     }
-
-    static std::wstring getModDir();
-    static void setModDir(std::wstring &);
-
-    private:
-        static std::wstring modDir; //private as need to process slashes properly, use getter/setter instead.
 };
 
-//-------- declarations --------
-std::wstring Server::modDir=L"", password=L"", ip=L"cacservers.ddns.net",
-armaArgs=L"-skipIntro -noSplash -world=empty -exThreads=7 -enableHT -hugepages -connect="+ip;//TODO username
 
-void init(){
-    getVar(Server::getModDir(),L".\\CACCore\\moddir.txt");
-    if(Server::getModDir()==L"") Server::setModDir(std::wstring(L".\\Mods\\"));
-    getVar(password,L"CACCore\\password.txt");
-}
- 
 //-------- getter/setter for modDir --------
-std::wstring Server::getModDir(){ 
-    std::wstring ret; getVar(ret,L"CACCore\\moddir.txt");
+std::wstring getModDir(){ 
+    std::wstring ret=getVarWS(L"CACCore\\moddir.txt");
+    bool b=false;
     for(auto &c: ret){
-        if(c==L'/') c=L'\\';
+        if(c==L'/'){
+            c=L'\\';
+            b=true;
+        }
     }
-    if(ret.back()!=L'\\') ret+=L'\\';
+    if(ret.back()!=L'\\'){
+        ret+=L'\\';
+        b=true;
+    }
+    if(b) setVar(ret,L"CACCore\\moddir.txt");
     return ret;
 }
 
-void Server::setModDir(std::wstring &s){ //sets in file, but also processes s, s can be used as a return
+void setModDir(std::wstring &s){ //sets in file, but also processes s, s can be used as a return
     for(auto &c: s){
         if(c==L'/') c=L'\\';
     }
     if(s.back()!=L'\\') s+=L'\\';
     setVar(s,L"CACCore\\moddir.txt");
 }
+
+std::wstring ip=L"cacservers.ddns.net",
+armaArgs=L"-skipIntro -noSplash -world=empty -exThreads=7 -enableHT -hugepages -connect="+ip;//TODO username
 
 //--------- Server launch functions --------
 bool launchServer(Server &s){
@@ -94,7 +92,7 @@ bool launchServer(Server &s){
 }
 
 bool launchPwd(Server &s){ //for password protected servers
-    std::wstring args=armaArgs+L" -password="+password+L" -mod="+s.mkModArg();
+    std::wstring args=armaArgs+L" -password="+getVarWS(L"CACCore\\password.txt")+L" -mod="+s.mkModArg();
     return launch(".\\arma3_x64.exe", args);
 }
 
