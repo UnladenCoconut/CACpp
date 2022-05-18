@@ -1,10 +1,14 @@
 .vscode/
 .vs/
 src/.vscode/
+
 bin/CACCore/
+bin/Mods/
 bin/CACCore.bat
+
 bin/*.obj
 bin/*.exe
 bin/*.pdb
 bin/*.ilk
+
 lib/
