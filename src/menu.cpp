@@ -11,7 +11,8 @@ typedef void(*fnPtr)();
 typedef fnPtr(*ptrFnPtr)();
 */
 
-WORD FOREGROUND_YELLOW=FOREGROUND_RED | FOREGROUND_GREEN;
+WORD FOREGROUND_YELLOW=FOREGROUND_RED | FOREGROUND_GREEN,
+FOREGROUND_WHITE=FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN;
 
 namespace menu {
 
@@ -28,6 +29,7 @@ namespace menu {
     char select(std::string inputs){
         do{
             sl=_getch();
+            if(sl==27) end(); //esc key quit
         } while(inputs.find(sl)==-1);
         return sl;
     }
@@ -62,7 +64,7 @@ namespace menu {
     void settings(){
         bool ret=false;
         while(!ret){
-            cls(); SetConsoleTextAttribute(menu::conScreenBuf,FOREGROUND_GREEN);
+            cls(); SetConsoleTextAttribute(conScreenBuf,FOREGROUND_GREEN);
             std::cout<<"\n 1 Optional Mods Management ["<<(getVarB(L"CACCore\\memory2.txt")? "ENABLED" : "DISABLED")<<"]\n";
             std::cout<<" 2 Change Username/Profile [?]\n";
             std::cout<<" 3 Change Exile Password [?]\n";
@@ -101,7 +103,7 @@ namespace menu {
 
     void start(){//never returns
         if(steamRunning()){
-            cls(); SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_GREEN);
+            cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_GREEN);
             std::cout<<"\nSTEAM IS RUNNING\n";
             Sleep(t_s);
             main();
@@ -110,18 +112,18 @@ namespace menu {
             std::wstring steamPath=getVarWS(L"CACCore\\memory.txt");
             //TODO run steamPath first before search
             if(steamPath==L"" || !std::filesystem::exists(steamPath)){
-                cls(); SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_YELLOW);
+                cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_YELLOW);
                 std::cout<<"\nSEARCHING FOR STEAM, PLEASE WAIT...\n";
                 steamPath=steamFind();
                 if(steamPath!=L""){
-                    cls(); SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_GREEN);
+                    cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_GREEN);
                     std::wcout<<L"\nSTEAM FOUND AT: "<<steamPath;
                     setVar(steamPath,L"CACCore\\memory.txt");
                     Sleep(t_s);
                 } else {
                     bool found=false;
                     do{
-                        cls(); SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_RED);
+                        cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_RED);
                         std::cout<<"\nFAILED TO FIND STEAM.\n";
                         std::cout<<"\n 1 Enter steam.exe path\n";
                         std::cout<<" 2 Exit\n";
@@ -131,7 +133,7 @@ namespace menu {
                             std::cout<<"\nPlease enter path of your steam.exe. (Example: \"C:\\Steam.exe\")\n";
                             std::wcin>>steamPath;
                             if(std::filesystem::exists(steamPath)){//TODO should check that the filename is steam.exe or enter dir instead.
-                                cls(); SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_YELLOW);
+                                cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_YELLOW);
                                 std::cout<<"\nSTEAM FOUND\n"; Sleep(t_s);
                                 setVar(steamPath,L"CACCore\\memory.txt");
                                 found=true;
@@ -145,15 +147,15 @@ namespace menu {
                 }
             }
             //steam should be found.
-            cls(); SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_YELLOW);
+            cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_YELLOW);
             std::cout<<"\nSTEAM IS NOT RUNNING, ATTEMPTING TO RUN STEAM...\n";
             if(launch(steamPath,L"")){
-                cls(); SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_GREEN);
+                cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_GREEN);
                 std::cout<<"\nSTEAM LAUNCHED SUCCESSFULLY.\n";
                 Sleep(t_s);
                 main();
             } else{
-                cls(); SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_RED);
+                cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_RED);
                 std::cout<<"\nFAILED TO LAUNCH STEAM. LAUNCH STEAM MANUALLY IF ISSUE PERSISTS.\n";/*TODO allow user to launch steam manually
                 and then continue.*/
                 Sleep(t_s);
@@ -164,7 +166,7 @@ namespace menu {
 
     void main(){ //will never return
         while(true){
-            cls(); SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_GREEN);
+            cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_GREEN);
             std::cout<<"\nArma 3 CAC Launcher - discord.gg/dNGcyEYK8F\n";
             std::cout<<"\nVERSION: CAC++ 0.1 EXPERIMENTAL\n";
             std::cout<<"\nUSERNAME: ?\n";
@@ -219,23 +221,32 @@ namespace menu {
     }
 
     void optMods(){
+
+        //TODO
+        //mod may not be found, in this case should not be added to arma 3 launch. This requires changes in server.cpp.
         bool ret=false;
         while(!ret){
             bool opt=getVarB(L"CACCore\\memory2.txt");
             cls();
             if(opt){
-                SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_GREEN);
+                SetConsoleTextAttribute(conScreenBuf, FOREGROUND_GREEN);
             }else{
-                SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_RED);
+                SetConsoleTextAttribute(conScreenBuf, FOREGROUND_RED);
             }
-            std::cout<<"OPTIONAL MODS: "<<(opt ? "ENABLED" : "DISABLED")<<'\n';
-            std::cout<<" 1 ENABLE\n";
-            std::cout<<" 2 DISABLE\n";
+            std::cout<<"\nOptional Mods: "<<(opt ? "Enabled" : "Disabled")<<'\n';
+            std::cout<<" 1 Enable\n";
+            std::cout<<" 2 Disable\n";
             if(opt){
-                std::cout<<" 3 SELECT OPTIONAL MODS\n";
+                std::cout<<" 3 Select Optional Mods\n";
             }
-            std::cout<<" "<<opt+3<<" RETURN\n";
-            if(opt) sl=select("1234"); else sl=select("123");
+            std::cout<<" "<<opt+3<<" Return\n";
+            if(opt){
+                std::cout<<"\nChoose Option (1-4): ";
+                sl=select("1234");
+            } else{
+                std::cout<<"\nChoose Option (1-3): ";
+                sl=select("123");
+            }
             switch(sl){
                 case '1':
                 setVar(true,L"CACCore\\memory2.txt");
@@ -245,6 +256,7 @@ namespace menu {
                 break;
                 case '3':
                 opt ? optModsSelect() : ret=true;
+                break;
                 case '4':
                 ret=true;
                 break;
@@ -253,28 +265,40 @@ namespace menu {
     }
 
     void optModsSelect(){
-        bool ret=false;
-        while(!ret){
+        while(true){
             cls();
-            std::string choice;
-            int i=0;
-            for(;i<server::optMods.num;++i){
-                std::cout<<" "<<i; std::wcout<<server::optMods.dirs[i]<<"\t\t\tSTATUS: ";
-                if(!std::filesystem::exists(server::optMods.dirs[i]+L"\\")) std::cout<<"NOT FOUND\n";
-                else{
-                    std::cout<<(getVarB(server::optMods.dirs[i]+L".txt")? "ENABLED" : "DISABLED")<<'\n';
-                    choice+=i+48;
-                }
+            std::cout<<"\nSelect Mod To Switch:\n";
+            //status can be enabled, disabled or not found.
+            //vanillasmokeforblastcore requires blastcore
+            int len=0;
+            for(int i=0;i<server::optMods.num;++i){
+                if(len<server::optMods.dirs[i].length()) len=server::optMods.dirs[i].length();
             }
-            std::cout<<"\n "<<i<<" Return\n";
-            choice+=i+48;
-            std::cout<<" Choose option: [ "; for(auto &c: choice) std::cout<<c<<' '; std::cout<<']';
-            sl=select(choice);
-            if(sl==i-48) ret=true;
+
+            std::string choices, status;
+            int j=1;
+            for(int i=0;i<server::optMods.num;++i){
+                std::cout<<' ';
+                std::wstring path=server::getModDir()+server::optMods.dirs[i]+L'\\';
+                if(!std::filesystem::exists(path)){
+                    std::cout<<' ';
+                    status="Not Found\n";
+                } else{
+                    std::cout<<j; choices+='0'+j; ++j;
+                    status=getVarB(L"CACCore\\"+server::optMods.dirs[i]+L".txt") ? "Enabled\n" : "Disabled\n";
+                }
+                std::wcout<<L' '+server::optMods.dirs[i];
+                std::cout<<std::string(len-server::optMods.dirs[i].length()+1,' ')<<"Status: "<<status;
+            }
+            std::cout<<"\n "<<j<<" Return\n";
+            choices+='0'+j;
+            std::cout<<"\nChoose Option (1-"<<j<<"): ";
+            sl=select(choices);
+            if(sl=='0'+j) return;
             else{
-                std::wstring ws=server::optMods.dirs[i-48]+L".txt";
+                std::wstring ws=L"CACCore\\"+server::optMods.dirs[sl-'1']+L".txt";
                 setVar(!getVarB(ws),ws);
-            }//TODO proper testing
+            }
         }
     }
 
@@ -311,7 +335,7 @@ namespace menu {
         cls();
         std::wcout<<logo<<L"\n";
         Sleep(t_s);
-        SetConsoleTextAttribute(menu::conScreenBuf, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+        SetConsoleTextAttribute(conScreenBuf, FOREGROUND_WHITE);
         if(!CloseHandle(conScreenBuf)) logErr();
         exit(0);
     }

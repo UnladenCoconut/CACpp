@@ -12,10 +12,10 @@ namespace server{
 
 //-------- declarations --------
 
-struct{
+const struct{
     const std::wstring dirs[5]={L"@ARM",L"@JSRS_SOUNDMOD",L"@DUI",L"@Blastcore",L"@VanillaSmokeForBlastcore"}; 
-    //mod folder name should be same as CACCore .txt filename, e.g. @ARM, @ARM.txt
-    int num=5; 
+    //mod folder name should be same as CACCore .txt filename, e.g. @ARM, @ARM.txt.
+    const int num=5; 
 } optMods;
 
 //-------- Server class --------
@@ -104,7 +104,7 @@ bool launchVN(Server &s){
 //-------- create servers --------
 //if the number of mods is not right, then will cause out of bounds access
 
-Server antistasi = {
+const Server antistasi = {
     3302,
     24,
     new std::wstring[24] {L"@CBA_A3",L"@Anizay",L"@KunduzAfgFD",L"@TembelanIsland",L"@VirolahtiValtatie7",
@@ -114,14 +114,14 @@ Server antistasi = {
     L"@ACEComRHSAFRF",L"@ACEComRHSGREF",L"@ACEComRHSUSAF",L"@Blastcore"}
 };
 
-Server coop = {
+const Server coop = {
     2702,
     9,
     new std::wstring[9] {L"@CBA_A3",L"@ace",L"@EnhancedMovement",L"@EnhancedMovementRework",L"@MfHealAbort",
     L"@VET_Unflipping",L"@AdvancedRappelling",L"@AdvancedUrbanRappelling",L"@Blastcore"}
 };
 
-Server DRO = {
+const Server DRO = {
     3502,
     11,
     new std::wstring[11] {L"@CBA_A3",L"@CUPTerrainsCore",L"@CUPTerrainsMaps",L"@Fallujah",L"@ace",
@@ -129,32 +129,32 @@ Server DRO = {
     L"@AdvancedUrbanRappelling"}
 };
 
-Server KoTH = {
+const Server KoTH = {
     2322,
     4,
     new std::wstring[4] {L"@CBA_A3",L"@EnhancedMovement",L"@EnhancedMovementRework",L"@MfHealAbort"}
 };
 
-Server exileAltis = {
+const Server exileAltis = {
     2302,
     9,
     new std::wstring[9] {L"@Exile",L"@CBA_A3",L"@DualArms",L"@EnhancedMovement",L"@EnhancedMovementRework",
     L"@Extended_Base_Mod",L"@X66-MammothTank",L"@AdvancedRappelling",L"@AdvancedUrbanRappelling"}
 };
 
-Server exileTanoa = {
+const Server exileTanoa = {
     2602,
     exileAltis.numMods,
     exileAltis.mods
 };
 
-Server exileEscape = {
+const Server exileEscape = {
     2372,
     5,
     new std::wstring[5] {L"@Exile",L"@CBA_A3",L"@DualArms",L"@EnhancedMovement",L"@EnhancedMovementRework"},
 };
 
-Server prairieFire = {
+const Server prairieFire = {
     3402,
     10,
     new std::wstring[10] {L"@CBA_A3",L"@ace",L"@ace_compat_sog",L"@EnhancedMovement",L"@EnhancedMovementRework",

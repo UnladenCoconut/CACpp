@@ -9,7 +9,7 @@
 
 //these functions get and store variables stored in CACCore config txt files
 //in future, it would be better to use either registry keys or a single configuration file
-//TODO better file exception handling
+//TODO better file exception handling: these files can create files, but if folder doesnt exist (moddir) then will throw
 
 void setVar(const std::wstring var, std::wstring path){
     std::wofstream f;
