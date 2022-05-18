@@ -296,7 +296,7 @@ namespace menu {
             sl=select(choices);
             if(sl=='0'+j) return;
             else{
-                std::wstring ws=L"CACCore\\"+server::optMods.dirs[sl-'1']+L".txt";
+                std::wstring ws=L"CACCore\\"+server::optMods.dirs[sl-1-'0']+L".txt";
                 setVar(!getVarB(ws),ws);
             }
         }

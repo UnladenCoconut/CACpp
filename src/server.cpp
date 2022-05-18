@@ -104,7 +104,7 @@ bool launchVN(Server &s){
 //-------- create servers --------
 //if the number of mods is not right, then will cause out of bounds access
 
-const Server antistasi = {
+Server antistasi = {
     3302,
     24,
     new std::wstring[24] {L"@CBA_A3",L"@Anizay",L"@KunduzAfgFD",L"@TembelanIsland",L"@VirolahtiValtatie7",
@@ -114,14 +114,14 @@ const Server antistasi = {
     L"@ACEComRHSAFRF",L"@ACEComRHSGREF",L"@ACEComRHSUSAF",L"@Blastcore"}
 };
 
-const Server coop = {
+Server coop = {
     2702,
     9,
     new std::wstring[9] {L"@CBA_A3",L"@ace",L"@EnhancedMovement",L"@EnhancedMovementRework",L"@MfHealAbort",
     L"@VET_Unflipping",L"@AdvancedRappelling",L"@AdvancedUrbanRappelling",L"@Blastcore"}
 };
 
-const Server DRO = {
+Server DRO = {
     3502,
     11,
     new std::wstring[11] {L"@CBA_A3",L"@CUPTerrainsCore",L"@CUPTerrainsMaps",L"@Fallujah",L"@ace",
@@ -129,32 +129,32 @@ const Server DRO = {
     L"@AdvancedUrbanRappelling"}
 };
 
-const Server KoTH = {
+Server KoTH = {
     2322,
     4,
     new std::wstring[4] {L"@CBA_A3",L"@EnhancedMovement",L"@EnhancedMovementRework",L"@MfHealAbort"}
 };
 
-const Server exileAltis = {
+Server exileAltis = {
     2302,
     9,
     new std::wstring[9] {L"@Exile",L"@CBA_A3",L"@DualArms",L"@EnhancedMovement",L"@EnhancedMovementRework",
     L"@Extended_Base_Mod",L"@X66-MammothTank",L"@AdvancedRappelling",L"@AdvancedUrbanRappelling"}
 };
 
-const Server exileTanoa = {
+Server exileTanoa = {
     2602,
     exileAltis.numMods,
     exileAltis.mods
 };
 
-const Server exileEscape = {
+Server exileEscape = {
     2372,
     5,
     new std::wstring[5] {L"@Exile",L"@CBA_A3",L"@DualArms",L"@EnhancedMovement",L"@EnhancedMovementRework"},
 };
 
-const Server prairieFire = {
+Server prairieFire = {
     3402,
     10,
     new std::wstring[10] {L"@CBA_A3",L"@ace",L"@ace_compat_sog",L"@EnhancedMovement",L"@EnhancedMovementRework",
