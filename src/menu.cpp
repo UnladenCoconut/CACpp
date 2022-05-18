@@ -68,7 +68,7 @@ namespace menu {
             std::cout<<"\n 1 Optional Mods Management ["<<(getVarB(L"CACCore\\memory2.txt")? "ENABLED" : "DISABLED")<<"]\n";
             std::cout<<" 2 Change Username/Profile [?]\n";
             std::cout<<" 3 Change Exile Password [?]\n";
-            std::cout<<" 4 Change Mods Directory [?]\n";
+            std::cout<<" 4 Change Mods Directory ["; std::wcout<<server::getModDir(); std::cout<<"]\n";
             std::cout<<" 5 Mandatory Mods Check\n";
             std::cout<<"\n 6 Return\n";
             std::cout<<"\n Choose Option (1-6): ";
@@ -320,6 +320,24 @@ namespace menu {
         bool ret=false;
         while(!ret){
             cls();
+            std::cout<<"Current Mod Directory: "; std::wcout<<server::getModDir()+L'\n';
+            std::cout<<"\n 1 Change Mod Directory\n";
+            std::cout<<" 2 Default Directory\n";
+            std::cout<<" 3 Return\n";
+            sl=select("123");
+            std::wstring ws;
+            switch(sl){
+                case '1':
+                std::cout<<"\nNew Mod Directory: ";
+                std::wcin>>ws; server::setModDir(ws);
+                break;
+                case '2':
+                server::setModDir(std::wstring(L"Mods\\"));
+                break;
+                case '3':
+                ret=true;
+                break;
+            }
         }
     }
 

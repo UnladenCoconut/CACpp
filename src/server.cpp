@@ -74,7 +74,7 @@ std::wstring getModDir(){
     return ret;
 }
 
-void setModDir(std::wstring &s){ //sets in file, but also processes s, s can be used as a return
+void setModDir(std::wstring &s){ //sets in file, but also processes s, s can be used as a return 
     for(auto &c: s){
         if(c==L'/') c=L'\\';
     }
@@ -97,6 +97,7 @@ bool launchPwd(Server &s){ //for password protected servers
 }
 
 bool launchVN(Server &s){
+    //TODO blastcore is both an optional mod and required by VN
     std::wstring args=armaArgs+L" -mod=vn;"+s.mkModArg();
     return launch(L".\\arma3_x64.exe", args);
 }
