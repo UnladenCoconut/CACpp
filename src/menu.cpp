@@ -30,7 +30,7 @@ namespace menu {
         do{
             sl=_getch();
             if(sl==27) end(); //esc key quit
-        } while(inputs.find(sl)==-1);
+        } while(inputs.find(sl)==-1 && !(inputs==""));
         return sl;
     }
 
@@ -302,11 +302,48 @@ namespace menu {
         }
     }
 
-    void modCheck(){
-        bool ret=false;
-        while(!ret){
-            cls();
+    std::wstring missedMods(server::Server &s){ //helper function
+        std::wstring ret=L"";
+        unsigned int mask=s.modCheck();
+        for(unsigned int i=0;i<s.numMods;++i){
+            if((mask&1U)==0) ret+=L' '+s.mods[i]+L"\n";//1U denotes unsigned literal, not signed
+            mask>>=1;
         }
+        return ret;
+    }
+
+    void modCheck(){
+            cls();
+            bool missed=false;
+            SetConsoleTextAttribute(conScreenBuf, FOREGROUND_YELLOW);
+            auto check=[](server::Server &s) mutable {std::wstring ws=missedMods(s); return ws==L"" ?   L" No Missing Mods.\n" : ws; };
+
+            std::cout<<"\nExile Altis\n";
+            std::wcout<<check(server::exileAltis);
+
+            std::cout<<"\nExile Tanoa\n";
+            std::wcout<<check(server::exileTanoa);
+
+            std::cout<<"\nCoop PVE\n";
+            std::wcout<<check(server::coop);
+
+            std::cout<<"\nKing of The Hill TVT\n";
+            std::wcout<<check(server::KoTH);
+
+            std::cout<<"\nDynamic Recon Ops CUP\n";
+            std::wcout<<check(server::DRO);
+
+            std::cout<<"\nAntistasi RHS\n";
+            std::wcout<<check(server::antistasi);
+
+            std::cout<<"\nExile Escape\n";
+            std::wcout<<check(server::exileEscape);
+
+            std::cout<<"\nAntistasi S.O.G. Prairie Fire\n";
+            std::wcout<<check(server::prairieFire);
+
+            std::cout<<"\nPress any key to return.\n";
+            select("");
     }
 
     void exilePwd(){
@@ -329,7 +366,8 @@ namespace menu {
             switch(sl){
                 case '1':
                 std::cout<<"\nNew Mod Directory: ";
-                std::wcin>>ws; server::setModDir(ws);
+                std::getline(std::wcin,ws); 
+                server::setModDir(ws);
                 break;
                 case '2':
                 server::setModDir(std::wstring(L"Mods\\"));
@@ -349,11 +387,11 @@ namespace menu {
     }
 
     void end(){//will never return
+        SetConsoleTextAttribute(conScreenBuf, FOREGROUND_WHITE);
         std::wstring logo=getVarWS(L"CACCore\\logo.txt");
         cls();
         std::wcout<<logo<<L"\n";
         Sleep(t_s);
-        SetConsoleTextAttribute(conScreenBuf, FOREGROUND_WHITE);
         if(!CloseHandle(conScreenBuf)) logErr();
         exit(0);
     }
