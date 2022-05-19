@@ -1,6 +1,9 @@
 # CACpp
 ## Hello There.
 
+##Prerequisites
+You must have installed Visual Studio, with Windows SDK.
+
 ### Build guide:
 Use build.bat or debug.bat for release and debug builds respectively. You may need to edit the path to point to your Visual Studio install.
 

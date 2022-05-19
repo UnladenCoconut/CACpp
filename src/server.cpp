@@ -12,6 +12,32 @@ namespace server{
 
 //-------- declarations --------
 
+//-------- getter/setter for modDir --------
+std::wstring getModDir(){ 
+    std::wstring ret=getVarWS(L"CACCore\\moddir.txt");
+    bool b=false;
+    for(auto &c: ret){
+        if(c==L'/'){
+            c=L'\\';
+            b=true;
+        }
+    }
+    if(ret.back()!=L'\\'){
+        ret+=L'\\';
+        b=true;
+    }
+    if(b) setVar(ret,L"CACCore\\moddir.txt");
+    return ret;
+}
+
+void setModDir(std::wstring &s){ //sets in file, but also processes s, s can be used as a return 
+    for(auto &c: s){
+        if(c==L'/') c=L'\\';
+    }
+    if(s.back()!=L'\\') s+=L'\\';
+    setVar(s,L"CACCore\\moddir.txt");
+}
+
 const struct{
     const std::wstring dirs[5]={L"@ARM",L"@JSRS_SOUNDMOD",L"@DUI",L"@Blastcore",L"@VanillaSmokeForBlastcore"}; 
     //mod folder name should be same as CACCore .txt filename, e.g. @ARM, @ARM.txt.
@@ -43,44 +69,17 @@ struct Server{
         return ret;
     }
 
-    unsigned int modCheck(Server s){ //returns a boolean bit mask of found mods.
-        unsigned int ret;
-        if(s.numMods>32) throw std::exception("numMods exceeds bit mask size.");
-        for(int i;i<s.numMods;++i){
-            if(std::filesystem::exists(s.mods[i])){
+    unsigned int modCheck(){ //returns a boolean bit mask of found mods.
+        unsigned int ret=0;
+        if(numMods>32) throw std::exception("numMods exceeds bit mask size.");
+        for(int i;i<numMods;++i){
+            if(std::filesystem::exists(getModDir()+mods[i]+L"\\")) {
                 ret|=(1<<i);
             }
         }
         return ret;
     }
 };
-
-
-//-------- getter/setter for modDir --------
-std::wstring getModDir(){ 
-    std::wstring ret=getVarWS(L"CACCore\\moddir.txt");
-    bool b=false;
-    for(auto &c: ret){
-        if(c==L'/'){
-            c=L'\\';
-            b=true;
-        }
-    }
-    if(ret.back()!=L'\\'){
-        ret+=L'\\';
-        b=true;
-    }
-    if(b) setVar(ret,L"CACCore\\moddir.txt");
-    return ret;
-}
-
-void setModDir(std::wstring &s){ //sets in file, but also processes s, s can be used as a return 
-    for(auto &c: s){
-        if(c==L'/') c=L'\\';
-    }
-    if(s.back()!=L'\\') s+=L'\\';
-    setVar(s,L"CACCore\\moddir.txt");
-}
 
 std::wstring ip=L"cacservers.ddns.net",
 armaArgs=L"-skipIntro -noSplash -world=empty -exThreads=7 -enableHT -hugepages -connect="+ip;//TODO username
