@@ -11,6 +11,15 @@
 //in future, it would be better to use either registry keys or a single configuration file
 //TODO better file exception handling: these files can create files, but if folder doesnt exist (moddir) then will throw
 
+bool varInit(){
+    if(!std::filesystem::exists(L"CACCore\\")){
+        if(!std::filesystem::create_directory(L"CACCore\\"));
+        std::cerr<<"Failed to create CACCore folder\n";
+        return false;
+    }
+    return true;
+}
+
 void setVar(const std::wstring var, std::wstring path){
     std::wofstream f;
     f.exceptions(std::wfstream::badbit | std::wfstream::failbit);

@@ -1,11 +1,12 @@
 #ifndef CAC_MENU
 #define CAC_MENU
 
+#include <conio.h>
+#include <filesystem>
 #include "system.cpp"
 #include "cfg.cpp"
 #include "server.cpp"
-#include <conio.h>
-
+#include "username.cpp"
 /*
 typedef void(*fnPtr)();
 typedef fnPtr(*ptrFnPtr)();
@@ -66,8 +67,8 @@ namespace menu {
         while(!ret){
             cls(); SetConsoleTextAttribute(conScreenBuf,FOREGROUND_GREEN);
             std::cout<<"\n 1 Optional Mods Management ["<<(getVarB(L"CACCore\\memory2.txt")? "ENABLED" : "DISABLED")<<"]\n";
-            std::cout<<" 2 Change Username/Profile [?]\n";
-            std::cout<<" 3 Change Exile Password [?]\n";
+            std::wcout<<L" 2 Change Username/Profile ["<<getVarWS(L"CACCore\\username.txt")<<L"]\n";
+            std::wcout<<L" 3 Change Exile Password ["<<getVarWS(L"CACCore\\password.txt")<<L"]\n";
             std::cout<<" 4 Change Mods Directory ["; std::wcout<<server::getModDir(); std::cout<<"]\n";
             std::cout<<" 5 Mandatory Mods Check\n";
             std::cout<<"\n 6 Return\n";
@@ -169,7 +170,7 @@ namespace menu {
             cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_GREEN);
             std::cout<<"\nArma 3 CAC Launcher - discord.gg/dNGcyEYK8F\n";
             std::cout<<"\nVERSION: CAC++ 0.1 EXPERIMENTAL\n";
-            std::cout<<"\nUSERNAME: ?\n";
+            std::wcout<<L"\nUSERNAME: "<<getVarWS(L"CACCore\\username.txt")<<L'\n';
             std::cout<<"\nOPTIONAL MODS: "<<(getVarB(L"CACCore\\memory2.txt")? "ENABLED" : "DISABLED")<<'\n';
             std::cout<<"\nSERVER STATUS: ?\n";
             std::cout<<"\n 1 Exile Altis\n";
@@ -314,7 +315,6 @@ namespace menu {
 
     void modCheck(){
             cls();
-            bool missed=false;
             SetConsoleTextAttribute(conScreenBuf, FOREGROUND_YELLOW);
             auto check=[](server::Server &s) mutable {std::wstring ws=missedMods(s); return ws==L"" ?   L" No Missing Mods.\n" : ws; };
 
@@ -350,6 +350,26 @@ namespace menu {
         bool ret=false;
         while(!ret){
             cls();
+            std::wcout<<L"Current Password: "<<getVarWS(L"CACCore\\password.txt")<<'\n';
+            std::cout<<"\n 1 Change Password\n";
+            std::cout<<" 2 Remove Password\n";
+            std::cout<<" 3 Return\n";
+            std::cout<<"\n Choose Option (1-3): ";
+            sl=select("123");
+            std::wstring ws;
+            switch(sl){
+                case '1':
+                std::cout<<"\n New Password: ";
+                std::getline(std::wcin,ws);
+                setVar(ws,L"CACCore\\password.txt");
+                break;
+                case '2':
+                setVar(L"",L"CACCore\\password.txt");
+                break;
+                case '3':
+                ret=true;
+                break;
+            }
         }
     }
 
@@ -361,6 +381,7 @@ namespace menu {
             std::cout<<"\n 1 Change Mod Directory\n";
             std::cout<<" 2 Default Directory\n";
             std::cout<<" 3 Return\n";
+            std::cout<<"\n Choose Option (1-3): ";
             sl=select("123");
             std::wstring ws;
             switch(sl){
@@ -380,9 +401,43 @@ namespace menu {
     }
 
     void username(){
+        //TODO check that username input is valid, remove surrounding whitespace
+        //same goes for entering mod dir.
         bool ret=false;
         while(!ret){
             cls();
+            std::wstring username=getVarWS(L"CACCore\\username.txt");
+            std::string txt;
+            if(username==defaultUser){
+                SetConsoleTextAttribute(conScreenBuf,FOREGROUND_BLUE);
+                txt="\n Profile: Exists, is the system default.\n";
+            }else if(std::filesystem::is_directory(altUserPath+username)){
+                txt="\n Profile: Exists.\n"; SetConsoleTextAttribute(conScreenBuf,FOREGROUND_GREEN);
+            }else{
+                SetConsoleTextAttribute(conScreenBuf,FOREGROUND_YELLOW);
+                txt="\n Warning: Profile non-existent, will be created at Arma 3 launch.\n";
+            }
+            std::cout<<"\n Note: different usernames will use seperate save games/profile folders.\n";
+            std::wcout<<L"\n Current Username: "<<getVarWS(L"CACCore\\username.txt")<<((username==defaultUser)?L" (Default)":L"")<<L'\n';
+            std::cout<<txt;
+            std::cout<<"\n Existing Profiles: \n\n";
+            for(auto &i: getAltUsers()) std::wcout<<L"  "<<i<<((i==defaultUser)?L" (Default)":L"")<<'\n';
+            std::cout<<"\n 1 Set Username\n";
+            std::cout<<" 2 Reset username to system default\n";
+            std::cout<<" 3 Return\n";
+            std::cout<<"\n Choose Option (1-3): "; 
+            switch(select("123")){
+                case '1':
+                std::cout<<"\n Username: "; std::getline(std::wcin,username);
+                setVar(username,L"CACCore\\username.txt");
+                break;
+                case '2':
+                setVar(defaultUser,L"CACCore\\username.txt");
+                break;
+                case '3':
+                ret=true;
+                break;
+            }
         }
     }
 

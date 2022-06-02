@@ -51,7 +51,7 @@ struct Server{
     std::wstring *mods=nullptr;
     
     ~Server(){
-        delete mods;
+        delete[] mods;
     }
 
     std::wstring mkModArg(){
@@ -72,7 +72,7 @@ struct Server{
     unsigned int modCheck(){ //returns a boolean bit mask of found mods.
         unsigned int ret=0;
         if(numMods>32) throw std::exception("numMods exceeds bit mask size.");
-        for(int i;i<numMods;++i){
+        for(int i=0;i<numMods;++i){
             if(std::filesystem::exists(getModDir()+mods[i]+L"\\")) {
                 ret|=(1<<i);
             }
@@ -86,18 +86,18 @@ armaArgs=L"-skipIntro -noSplash -world=empty -exThreads=7 -enableHT -hugepages -
 
 //--------- Server launch functions --------
 bool launchServer(Server &s){
-    std::wstring args=armaArgs+L" -mod="+s.mkModArg();
+    std::wstring args=armaArgs+L" -mod="+s.mkModArg()+L" -name="+getVarWS(L"CACCore\\username.txt");
     return launch(L".\\arma3_x64.exe", args);
 }
 
 bool launchPwd(Server &s){ //for password protected servers
-    std::wstring args=armaArgs+L" -password="+getVarWS(L"CACCore\\password.txt")+L" -mod="+s.mkModArg();
+    std::wstring args=armaArgs+L" -password="+getVarWS(L"CACCore\\password.txt")+L" -mod="+s.mkModArg()+L" -name="+getVarWS(L"CACCore\\username.txt");
     return launch(".\\arma3_x64.exe", args);
 }
 
 bool launchVN(Server &s){
     //TODO blastcore is both an optional mod and required by VN
-    std::wstring args=armaArgs+L" -mod=vn;"+s.mkModArg();
+    std::wstring args=armaArgs+L" -mod=vn;"+s.mkModArg()+L" -name="+getVarWS(L"CACCore\\username.txt");
     return launch(L".\\arma3_x64.exe", args);
 }
 
