@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 
+#include "username.cpp"
 #include "menu.cpp"
 #include "server.cpp"
 
@@ -13,12 +14,11 @@ try {
 
     //-------- init --------
     freopen("CACCore\\log.txt","w",stderr); //write error messages to log file
-    if(!menu::init()){
+    if(!(menu::init() && varInit() && userInit())){
         return 1;
     }
     
     //--------
-
     menu::start();
 
     return 0;

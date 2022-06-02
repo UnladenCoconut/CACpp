@@ -8,5 +8,5 @@ int main(int argc, char* argv[]){
         std::cout<<argv[i]<<" ";
     }
     std::cout<<'\n';
-    Sleep(2000);
+    Sleep(10000);
 }
