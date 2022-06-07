@@ -14,7 +14,7 @@ try {
 
     //-------- init --------
     freopen("CACCore\\log.txt","w",stderr); //write error messages to log file
-    if(!(menu::init() && varInit() && userInit())){
+    if(!(menu::init() && varInit() && userInit() && server::init())){
         return 1;
     }
     

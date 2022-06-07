@@ -13,9 +13,10 @@
 
 bool varInit(){
     if(!std::filesystem::exists(L"CACCore\\")){
-        if(!std::filesystem::create_directory(L"CACCore\\"));
-        std::cerr<<"Failed to create CACCore folder\n";
-        return false;
+        if(!std::filesystem::create_directory(L"CACCore\\")){
+            std::cerr<<"Failed to create CACCore folder\n";
+            return false;
+        }
     }
     return true;
 }
