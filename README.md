@@ -3,6 +3,7 @@
 
 ##Prerequisites
 You must have installed Visual Studio, with Windows SDK.
+This project uses https://github.com/BinaryAlien/libssq ; Make a copy of the repository in the lib folder.
 
 ### Build guide:
 Use build.bat or debug.bat for release and debug builds respectively. You may need to edit the path to point to your Visual Studio install.

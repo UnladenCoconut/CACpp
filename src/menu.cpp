@@ -1,16 +1,16 @@
 #ifndef CAC_MENU
 #define CAC_MENU
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <conio.h>
 #include <filesystem>
 #include "system.cpp"
 #include "cfg.cpp"
 #include "server.cpp"
 #include "username.cpp"
-/*
-typedef void(*fnPtr)();
-typedef fnPtr(*ptrFnPtr)();
-*/
 
 WORD FOREGROUND_YELLOW=FOREGROUND_RED | FOREGROUND_GREEN,
 FOREGROUND_WHITE=FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN;
@@ -173,14 +173,14 @@ namespace menu {
             std::wcout<<L"\nUSERNAME: "<<getVarWS(L"CACCore\\username.txt")<<L'\n';
             std::cout<<"\nOPTIONAL MODS: "<<(getVarB(L"CACCore\\memory2.txt")? "ENABLED" : "DISABLED")<<'\n';
             std::cout<<"\nSERVER STATUS: ?\n";
-            std::cout<<"\n 1 Exile Altis\n";
-            std::cout<<" 2 Exile Tanoa\n";
-            std::cout<<" 3 Coop PVE\n";
-            std::cout<<" 4 King of The Hill TVT\n";
-            std::cout<<" 5 Dynamic Recon Ops CUP\n";
-            std::cout<<" 6 Antistasi RHS\n";
-            std::cout<<" 7 Exile Escape\n";
-            std::cout<<" 8 Antistasi S.O.G. Prairie Fire\n";
+            std::cout<<"\n 1 Exile Altis "<<server::exileAltis->count();
+            std::cout<<" 2 Exile Tanoa "<<server::exileTanoa->count();
+            std::cout<<" 3 Coop PVE "<<server::coop->count();
+            std::cout<<" 4 King of The Hill TVT "<<server::KoTH->count();
+            std::cout<<" 5 Dynamic Recon Ops CUP "<<server::DRO->count();
+            std::cout<<" 6 Antistasi RHS "<<server::antistasi->count();
+            std::cout<<" 7 Exile Escape "<<server::exileEscape->count();
+            std::cout<<" 8 Antistasi S.O.G. Prairie Fire "<<server::prairieFire->count();
             std::cout<<"\n 9 CAC Settings\n";
             std::cout<<"\n 0 Exit CAC++ Launcher\n";
             std::cout<<"\nChoose option (0-9): ";
@@ -270,7 +270,7 @@ namespace menu {
             cls();
             std::cout<<"\nSelect Mod To Switch:\n";
             //status can be enabled, disabled or not found.
-            //vanillasmokeforblastcore requires blastcore
+            //TODO vanillasmokeforblastcore requires blastcore
             int len=0;
             for(int i=0;i<server::optMods.num;++i){
                 if(len<server::optMods.dirs[i].length()) len=server::optMods.dirs[i].length();
@@ -303,11 +303,11 @@ namespace menu {
         }
     }
 
-    std::wstring missedMods(server::Server &s){ //helper function
+    std::wstring missedMods(server::Server *s){ //helper function
         std::wstring ret=L"";
-        unsigned int mask=s.modCheck();
-        for(unsigned int i=0;i<s.numMods;++i){
-            if((mask&1U)==0) ret+=L' '+s.mods[i]+L"\n";//1U denotes unsigned literal, not signed
+        unsigned int mask=s->modCheck();
+        for(unsigned int i=0;i<s->numMods;++i){
+            if((mask&1U)==0) ret+=L' '+s->mods[i]+L"\n";//1U denotes unsigned literal, not signed
             mask>>=1;
         }
         return ret;
@@ -316,7 +316,7 @@ namespace menu {
     void modCheck(){
             cls();
             SetConsoleTextAttribute(conScreenBuf, FOREGROUND_YELLOW);
-            auto check=[](server::Server &s) mutable {std::wstring ws=missedMods(s); return ws==L"" ?   L" No Missing Mods.\n" : ws; };
+            auto check=[](server::Server *s) mutable {std::wstring ws=missedMods(s); return ws==L"" ?   L" No Missing Mods.\n" : ws; };
 
             std::cout<<"\nExile Altis\n";
             std::wcout<<check(server::exileAltis);
@@ -448,6 +448,7 @@ namespace menu {
         std::wcout<<logo<<L"\n";
         Sleep(t_s);
         if(!CloseHandle(conScreenBuf)) logErr();
+        WSACleanup();
         exit(0);
     }
 }

@@ -10,4 +10,4 @@ bin/*.exe
 bin/*.pdb
 bin/*.ilk
 
-lib/
+lib/*/

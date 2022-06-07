@@ -1,6 +1,9 @@
 #ifndef CAC_USER
 #define CAC_USER
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 #include <lmcons.h>
 #include <userenv.h>
@@ -12,6 +15,8 @@
 std::wstring altUserPath(L""), defaultUser(L"");
 
 bool userInit(){
+    //this just initialises the two variables above.
+
     HANDLE hProc=GetCurrentProcessToken();
     wchar_t *wcs = new wchar_t[512];
     DWORD n=1024;
