@@ -169,10 +169,8 @@ namespace menu {
         while(true){
             cls(); SetConsoleTextAttribute(conScreenBuf, FOREGROUND_GREEN);
             std::cout<<"\nArma 3 CAC Launcher - discord.gg/dNGcyEYK8F\n";
-            std::cout<<"\nVERSION: CAC++ 0.1 EXPERIMENTAL\n";
             std::wcout<<L"\nUSERNAME: "<<getVarWS(L"CACCore\\username.txt")<<L'\n';
             std::cout<<"\nOPTIONAL MODS: "<<(getVarB(L"CACCore\\memory2.txt")? "ENABLED" : "DISABLED")<<'\n';
-            std::cout<<"\nSERVER STATUS: ?\n";
             std::cout<<"\n 1 Exile Altis "<<server::exileAltis->count();
             std::cout<<" 2 Exile Tanoa "<<server::exileTanoa->count();
             std::cout<<" 3 Coop PVE "<<server::coop->count();
@@ -271,13 +269,12 @@ namespace menu {
             std::cout<<"\nSelect Mod To Switch:\n";
             //status can be enabled, disabled or not found.
             //TODO vanillasmokeforblastcore requires blastcore
-            int len=0;
-            for(int i=0;i<server::optMods.num;++i){
+            int len=0, i=0;
+            for(;i<server::optMods.num;++i){
                 if(len<server::optMods.dirs[i].length()) len=server::optMods.dirs[i].length();
             }
 
             std::string choices, status;
-            int j=1;
             for(int i=0;i<server::optMods.num;++i){
                 std::cout<<' ';
                 std::wstring path=server::getModDir()+server::optMods.dirs[i]+L'\\';
@@ -285,17 +282,23 @@ namespace menu {
                     std::cout<<' ';
                     status="Not Found\n";
                 } else{
-                    std::cout<<j; choices+='0'+j; ++j;
+                    std::cout<<i+1; choices+='0'+i+1;
                     status=getVarB(L"CACCore\\"+server::optMods.dirs[i]+L".txt") ? "Enabled\n" : "Disabled\n";
                 }
                 std::wcout<<L' '+server::optMods.dirs[i];
                 std::cout<<std::string(len-server::optMods.dirs[i].length()+1,' ')<<"Status: "<<status;
             }
-            std::cout<<"\n "<<j<<" Return\n";
-            choices+='0'+j;
-            std::cout<<"\nChoose Option (1-"<<j<<"): ";
+            ++i;
+            std::cout<<"\n "<<i<<" Return\n";
+            choices+='0'+i;
+            std::string choiceStr;
+            for(auto &c: choices){
+                choiceStr+=c; choiceStr+=',';
+            }
+            choiceStr.pop_back();
+            std::cout<<"\nChoose Option ["<<choiceStr<<"]: ";
             sl=select(choices);
-            if(sl=='0'+j) return;
+            if(sl=='0'+i) return;
             else{
                 std::wstring ws=L"CACCore\\"+server::optMods.dirs[sl-1-'0']+L".txt";
                 setVar(!getVarB(ws),ws);

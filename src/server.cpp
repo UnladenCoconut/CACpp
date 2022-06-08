@@ -118,18 +118,18 @@ struct Server{
 //--------- Server launch functions --------
 
 bool launchServer(Server *s){
-    std::wstring args=armaArgs+L" -mod="+s->mkModArg()+L" -name="+getVarWS(L"CACCore\\username.txt");
+    std::wstring args=armaArgs+L" -port="+std::to_wstring(s->port)+L" -mod="+s->mkModArg()+L" -name="+getVarWS(L"CACCore\\username.txt");
     return launch(L".\\arma3_x64.exe", args);
 }
 
 bool launchPwd(Server *s){ //for password protected servers
-    std::wstring args=armaArgs+L" -password="+getVarWS(L"CACCore\\password.txt")+L" -mod="+s->mkModArg()+L" -name="+getVarWS(L"CACCore\\username.txt");
+    std::wstring args=armaArgs+L" -port="+std::to_wstring(s->port)+L" -password="+getVarWS(L"CACCore\\password.txt")+L" -mod="+s->mkModArg()+L" -name="+getVarWS(L"CACCore\\username.txt");
     return launch(".\\arma3_x64.exe", args);
 }
 
 bool launchVN(Server *s){
     //TODO blastcore is both an optional mod and required by VN
-    std::wstring args=armaArgs+L" -mod=vn;"+s->mkModArg()+L" -name="+getVarWS(L"CACCore\\username.txt");
+    std::wstring args=armaArgs+L" -port="+std::to_wstring(s->port)+L" -mod=vn;"+s->mkModArg()+L" -name="+getVarWS(L"CACCore\\username.txt");
     return launch(L".\\arma3_x64.exe", args);
 }
 
@@ -188,7 +188,6 @@ bool init(){
             DnsRecordListFree(old,DnsFreeRecordList);
         }
     }
-    std::cerr<<ip;
 
     //create servers
     antistasi = new Server{
