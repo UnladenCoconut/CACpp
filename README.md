@@ -1,7 +1,7 @@
 # CACpp
 ## Hello There.
 
-##Prerequisites
+## Prerequisites
 You must have installed Visual Studio, with Windows SDK.
 This project uses https://github.com/BinaryAlien/libssq ; Make a copy of the repository in the lib folder.
 
