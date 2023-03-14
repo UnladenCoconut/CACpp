@@ -16,7 +16,7 @@ namespace server{
 
 //-------- declarations --------
 
-std::string dns="cacservers.ddns.net",ip;
+std::string dns="unladencoconut.ddns.net",ip;
 bool up(false);
 std::wstring armaArgs=L"-skipIntro -noSplash -world=empty -exThreads=7 -enableHT -hugepages -connect=cacservers.ddns.net";
 //-------- getter/setter for modDir --------
