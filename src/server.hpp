@@ -1,5 +1,5 @@
-#ifndef CAC_SERVER
-#define CAC_SERVER
+#ifndef CAC_SERVER_IMPL
+#define CAC_SERVER_IMPL
 
 #include <exception>
 #include <filesystem>
@@ -7,10 +7,10 @@
 #include <WinSock2.h>
 #include <WinDNS.h>
 
-#include <ssq\a2s.h>
+#include "ssq/a2s.h"
 
-#include "system.cpp"
-#include "cfg.cpp" 
+#include "system.hpp"
+#include "cfg.hpp" 
 
 namespace server{
 
@@ -58,22 +58,21 @@ struct Server{
     int port;
     int numMods;
     std::wstring *mods=nullptr;
-    SSQ_QUERIER *querier;
+    SSQ_SERVER *querier;
     Server(int p, int n, std::wstring *wsp): port(p), numMods(n), mods(wsp) {
-        if((querier=ssq_init())==nullptr){
+        if((querier=ssq_server_new(ip.c_str(),port))==nullptr){
             delete mods;
             throw std::runtime_error("failed to initialise querier.");
         }
-        ssq_set_timeout(querier,SSQ_TIMEOUT_SEND,500);//set the timeout for getting servr count here, in ms
-        ssq_set_timeout(querier,SSQ_TIMEOUT_RECV,500);
-        ssq_set_target(querier,ip.c_str(),port+1);
-        if(!ssq_ok(querier)){
-            std::cerr<<"SSQ Error: "<<ssq_errm(querier)<<'\n';
+        ssq_server_timeout(querier,SSQ_TIMEOUT_SEND,500);//set the timeout for getting servr count here, in ms
+        ssq_server_timeout(querier,SSQ_TIMEOUT_RECV,500);
+        if(!ssq_server_eok(querier)){
+            std::cerr<<"SSQ Error: "<<ssq_server_emsg(querier)<<'\n';
             }
     }
     ~Server(){
         delete[] mods;
-        if(querier!=nullptr) ssq_free(querier);
+        if(querier!=nullptr) ssq_server_free(querier);
     }
 
     std::wstring mkModArg(){
@@ -104,9 +103,9 @@ struct Server{
 
     std::string count(){//no of players or status of server.
         A2S_INFO *info=ssq_info(querier);
-        if(!ssq_ok(querier)){
-            std::cerr<<ssq_errm(querier)<<'\n';
-            ssq_errclr(querier);
+        if(!ssq_server_eok(querier)){
+            std::cerr<<ssq_server_emsg(querier)<<'\n';
+            ssq_server_eclr(querier);
             return "?/?\n";
         }
         std::string ret=std::to_string(info->players)+'/'+std::to_string(info->max_players)+'\n';
@@ -250,7 +249,5 @@ bool init(){
 }
 
 }
-
-
 
 #endif

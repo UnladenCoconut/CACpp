@@ -1,0 +1,3 @@
+[submodule "lib/ssq"]
+	path = lib/ssq
+	url = https://github.com/BinaryAlien/libssq

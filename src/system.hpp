@@ -8,7 +8,7 @@
 #include <TlHelp32.h>
 #include <iostream>
 #include <filesystem>
-#include "cfg.cpp"
+#include "cfg.hpp"
 
 void logErr(){//this logs windows system error messages to stderr (which is redirected to log file.)
     /* 

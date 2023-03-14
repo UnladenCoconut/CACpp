@@ -3,9 +3,9 @@
 #include <iostream>
 #include <string>
 
-#include "username.cpp"
-#include "menu.cpp"
-#include "server.cpp"
+#include "username.hpp"
+#include "menu.hpp"
+#include "server.hpp"
 
 //note wide strings are used predominantly for compatibility with windows system and paths, which are UTF-16.
 int main(int argc, char *argv[]){

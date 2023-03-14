@@ -7,10 +7,10 @@
 
 #include <conio.h>
 #include <filesystem>
-#include "system.cpp"
-#include "cfg.cpp"
-#include "server.cpp"
-#include "username.cpp"
+#include "system.hpp"
+#include "cfg.hpp"
+#include "server.hpp"
+#include "username.hpp"
 
 WORD FOREGROUND_YELLOW=FOREGROUND_RED | FOREGROUND_GREEN,
 FOREGROUND_WHITE=FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN;
